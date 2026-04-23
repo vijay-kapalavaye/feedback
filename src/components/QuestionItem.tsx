@@ -26,7 +26,7 @@ export function QuestionItem({
   return (
     <motion.div
       layout
-      className="rounded-xl border border-slate-200/90 bg-white/60 px-3 py-3 shadow-sm shadow-slate-200/50 sm:px-4 sm:py-4"
+      className="rounded-lg border border-slate-200/90 bg-white/60 px-2 py-1.5 shadow-sm shadow-slate-200/50 sm:rounded-lg sm:px-2.5 sm:py-1.5 md:px-3 md:py-2"
       animate={
         showError
           ? { x: [0, -10, 10, -10, 10, -6, 6, 0] }
@@ -36,9 +36,9 @@ export function QuestionItem({
     >
       <div
         id={`${question.id}-label`}
-        className="mb-2 flex cursor-default items-start gap-2 text-sm font-medium text-slate-800 sm:text-base"
+        className="mb-0.5 flex cursor-default items-start gap-1.5 text-xs font-medium text-slate-800 sm:mb-1 sm:gap-1.5 sm:text-sm"
       >
-        <span className="text-lg sm:text-xl" aria-hidden>
+        <span className="text-sm sm:text-base" aria-hidden>
           {question.emoji}
         </span>
         <span>{question.text}</span>
@@ -60,7 +60,7 @@ export function QuestionItem({
           role="alert"
           initial={{ opacity: 0, y: -4 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mt-2 text-sm font-medium text-amber-700"
+          className="mt-1 text-xs font-medium text-amber-700 sm:mt-1.5 sm:text-sm"
         >
           ⚠️ Please rate this question before submitting.
         </motion.p>

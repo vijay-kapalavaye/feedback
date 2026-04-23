@@ -30,7 +30,7 @@ function StarIcon({
   return (
     <svg
       viewBox="0 0 24 24"
-      className="h-9 w-9 sm:h-10 sm:w-10 md:h-11 md:w-11"
+      className="h-6 w-6 sm:h-7 sm:w-7 md:h-8 md:w-8"
       aria-hidden
     >
       <defs>
@@ -113,7 +113,7 @@ export function StarRating({
       }}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-4 rounded-2xl opacity-0 transition-opacity duration-300"
+        className="pointer-events-none absolute -inset-1.5 rounded-xl opacity-0 transition-opacity duration-300 sm:-inset-3 sm:rounded-2xl"
         style={{
           background: glow,
           opacity: display > 0 ? 0.9 : 0,
@@ -128,7 +128,7 @@ export function StarRating({
         aria-invalid={hasError || undefined}
         aria-describedby={hasError ? `${id}-error` : undefined}
         tabIndex={0}
-        className="relative flex flex-wrap items-center gap-1 rounded-xl outline-none ring-offset-2 ring-offset-white focus-visible:ring-2 focus-visible:ring-sky-400 sm:gap-1.5"
+        className="relative -mx-0.5 flex flex-wrap items-center gap-0 rounded-lg outline-none ring-offset-1 ring-offset-white/80 focus-visible:ring-2 focus-visible:ring-sky-400 sm:mx-0 sm:gap-1 sm:rounded-xl sm:ring-offset-2 md:gap-1.5"
         onKeyDown={(e) => {
           const curIndex = kbdIndex ?? (value || 1);
           if (e.key === "ArrowRight" || e.key === "ArrowUp") {
@@ -169,7 +169,7 @@ export function StarRating({
               aria-checked={value === star}
               aria-label={`${label}: ${star} out of 5 stars`}
               tabIndex={-1}
-              className="relative rounded-xl p-1 outline-none ring-sky-200/0 transition-[box-shadow,background-color] duration-200 hover:bg-sky-50/90 hover:shadow-[0_0_0_1px_rgba(186,230,253,0.95),0_8px_24px_rgba(14,165,233,0.12)] hover:ring-2 hover:ring-sky-200/80"
+              className="relative rounded-sm p-0 outline-none ring-sky-200/0 transition-[box-shadow,background-color] duration-200 hover:bg-sky-50/90 hover:shadow-[0_0_0_1px_rgba(186,230,253,0.95),0_8px_24px_rgba(14,165,233,0.12)] hover:ring-2 hover:ring-sky-200/80 sm:rounded-md sm:p-0.5 md:rounded-xl md:p-1"
               whileHover={{ scale: 1.06 }}
               whileTap={{ scale: 0.94 }}
               animate={
