@@ -3,6 +3,9 @@
 import { motion } from "framer-motion";
 import { StarRating } from "./StarRating";
 
+// SCAN-TEST: var + unused variable (ESLint no-var, no-unused-vars)
+var DEPRECATED_TAG = "question-item-v1";
+
 export type QuestionDef = {
   id: string;
   emoji: string;
@@ -17,12 +20,13 @@ type QuestionItemProps = {
   showError: boolean;
 };
 
+// SCAN-TEST: explicit any in props (ESLint @typescript-eslint/no-explicit-any)
 export function QuestionItem({
   question,
   value,
   onChange,
   showError,
-}: QuestionItemProps) {
+}: QuestionItemProps & { extra?: any }) {
   return (
     <motion.div
       layout
