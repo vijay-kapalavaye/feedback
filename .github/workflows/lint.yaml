@@ -1,0 +1,97 @@
+name: Lint & Build
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: lint-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint:
+    name: ESLint & Next.js build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run ESLint
+        id: eslint
+        run: npm run lint -- --max-warnings=0 2>&1 | tee eslint.log
+        continue-on-error: true
+
+      - name: Run Next.js build
+        id: build
+        run: npm run build 2>&1 | tee build.log
+        continue-on-error: true
+
+      - name: Build PR comment body
+        if: github.event_name == 'pull_request'
+        id: comment
+        run: |
+          {
+            echo 'body<<EOF'
+            echo "## PR Check Results"
+            echo ""
+            if [ "${{ steps.eslint.outcome }}" = "success" ]; then
+              echo "- ESLint: passed"
+            else
+              echo "- ESLint: failed"
+            fi
+            if [ "${{ steps.build.outcome }}" = "success" ]; then
+              echo "- Next.js build: passed"
+            else
+              echo "- Next.js build: failed"
+            fi
+            echo ""
+            echo "<details><summary>ESLint output</summary>"
+            echo ""
+            echo '```'
+            tail -n 200 eslint.log || echo "(no output)"
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "<details><summary>Build output (tail)</summary>"
+            echo ""
+            echo '```'
+            tail -n 80 build.log || echo "(no output)"
+            echo '```'
+            echo ""
+            echo "</details>"
+            echo ""
+            echo "_Commit: ${{ github.event.pull_request.head.sha }}_"
+            echo EOF
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Upsert PR comment
+        if: github.event_name == 'pull_request'
+        uses: marocchino/sticky-pull-request-comment@v2
+        with:
+          header: lint-build-report
+          message: ${{ steps.comment.outputs.body }}
+
+      - name: Fail job if any check failed
+        if: steps.eslint.outcome != 'success' || steps.build.outcome != 'success'
+        run: |
+          echo "ESLint outcome: ${{ steps.eslint.outcome }}"
+          echo "Build outcome:  ${{ steps.build.outcome }}"
+          exit 1
