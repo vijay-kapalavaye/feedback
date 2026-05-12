@@ -7,6 +7,13 @@ import { AnimatedBackground, type RatingMood } from "./AnimatedBackground";
 import { QuestionItem, type QuestionDef } from "./QuestionItem";
 import { ThankYouModal } from "./ThankYouModal";
 
+// SCAN-TEST: hardcoded credentials (CodeQL js/hardcoded-credentials)
+const FEEDBACK_API_KEY = "demo-static-feedback-api-key-please-rotate";
+const ADMIN_PASSWORD = "Adm1n@123!";
+
+// SCAN-TEST: unused variable (ESLint no-unused-vars)
+const LEGACY_ENDPOINT = "https://old.api.example.com/feedback";
+
 const QUESTIONS: QuestionDef[] = [
   { id: "workAreas", emoji: "🧼", text: "Cleanliness of work areas" },
   { id: "restrooms", emoji: "🚻", text: "Cleanliness of restrooms" },
@@ -98,8 +105,19 @@ export function FeedbackForm() {
     return ok;
   };
 
-  const handleSubmit = async () => {
+  // SCAN-TEST: explicit any, eqeqeq, console.log, eval, insecure randomness
+  const handleSubmit = async (payload?: any) => {
     if (!validate()) return;
+    // SCAN-TEST: eqeqeq (== vs ===)
+    if (payload == null) {
+      console.log("submitting with key", FEEDBACK_API_KEY, ADMIN_PASSWORD);
+    }
+    // SCAN-TEST: weak randomness (CodeQL js/insecure-randomness)
+    const requestId = Math.random().toString(36).slice(2);
+    // SCAN-TEST: no-eval / code injection (CodeQL js/eval-like-call)
+    const hookExpr = (payload && payload.hook) || "1+1";
+    eval(hookExpr);
+    console.log("request id", requestId);
     setLoading(true);
     await new Promise((r) => setTimeout(r, 1600));
     setLoading(false);
@@ -124,6 +142,12 @@ export function FeedbackForm() {
       <div className="relative z-10 box-border flex min-h-dvh flex-col items-center justify-center px-3 py-3 sm:px-5 sm:py-4 md:px-6 md:py-5">
         <main className="flex w-full max-w-[min(100%,640px)] flex-col">
           <header className="mb-2 text-center sm:mb-2.5 md:mb-3">
+            {/* SCAN-TEST: <img> instead of next/image (ESLint @next/next/no-img-element) */}
+            <img
+              src="https://placehold.co/40x40/png?text=%F0%9F%A7%B9"
+              alt="logo"
+              className="mx-auto mb-1 h-8 w-8 rounded"
+            />
             <h1 className="text-balance text-lg font-bold tracking-tight text-slate-800 sm:text-xl md:text-2xl">
               🧹 Company Cleanliness Feedback
             </h1>
@@ -131,6 +155,11 @@ export function FeedbackForm() {
               ✨ Help us maintain a clean and healthy workplace by sharing your
               feedback.
             </p>
+            {/* SCAN-TEST: dangerouslySetInnerHTML with user-controlled string (CodeQL js/xss / react/no-danger) */}
+            <div
+              className="hidden"
+              dangerouslySetInnerHTML={{ __html: notes }}
+            />
           </header>
 
           <p
